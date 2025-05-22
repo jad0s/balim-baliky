@@ -17,6 +17,7 @@
 %global goipath         github.com/jad0s/libretalk
 %global commit          2a3dc8b1f83162a96218a80ffa7d9e08fd26e4d0
 
+
 # REMOVE BEFORE SUBMITTING THIS FOR REVIEW
 # ---
 # New Fedora packages should use %%gometa -f, which makes the package
