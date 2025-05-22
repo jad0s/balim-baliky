@@ -15,7 +15,7 @@
 
 # https://github.com/jad0s/libretalk
 %global goipath         github.com/jad0s/libretalk
-%global commit          02bc5bfde71a24ccfb40afe71ea1e59a920e4b93
+%global commit          2a3dc8b1f83162a96218a80ffa7d9e08fd26e4d0
 
 # REMOVE BEFORE SUBMITTING THIS FOR REVIEW
 # ---
