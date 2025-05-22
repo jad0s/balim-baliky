@@ -41,7 +41,7 @@ Summary:        Self hosted, modular chat app
 
 License:        # FIXME
 URL:            %{gourl}
-Source:         %{gosource}
+Source0:        https://github.com/jad0s/libretalk/archive/%{commit}.tar.gz
 
 %description %{common_description}
 
