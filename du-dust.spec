@@ -3,41 +3,58 @@
 
 %global crate du-dust
 
+# prevent library files from being installed
+%global cargo_install_lib 0
+
 Name:           du-dust
-Version:        1.2.1
+Version:        1.2.3
 Release:        %autorelease
 Summary:        More intuitive version of du
 
-License:        Apache-2.0
-URL:            https://crates.io/crates/du-dust
+SourceLicense:  Apache-2.0
+# (MIT OR Apache-2.0) AND Unicode-DFS-2016
+# Apache-2.0
+# Apache-2.0 OR BSL-1.0
+# Apache-2.0 OR MIT
+# Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+# BSD-2-Clause
+# MIT
+# MIT OR Apache-2.0
+# MPL-2.0
+# Unlicense OR MIT
+License:        %{shrink:
+    Apache-2.0 AND
+    BSD-2-Clause AND
+    MIT AND
+    MPL-2.0 AND
+    Unicode-DFS-2016 AND
+    (Apache-2.0 OR BSL-1.0) AND
+    (Apache-2.0 OR MIT) AND
+    (Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT) AND
+    (Unlicense OR MIT)
+    }
+# LICENSE.dependencies contains a full license breakdown
+
+URL:            https://crates.io/crates/%{crate}
 Source:         %{crates_source}
 # Automatically generated patch to strip dependencies and normalize metadata
 Patch:          du-dust-fix-metadata-auto.diff
 # Manually created patch for downstream crate metadata changes
+# * Allow directories 5 and 6: https://github.com/bootandy/dust/pull/533
+# * Update sysinfo to 0.33
 Patch:          du-dust-fix-metadata.diff
 
-BuildRequires:  cargo-rpm-macros >= 24
+BuildRequires:  cargo-rpm-macros >= 26
 
 %global _description %{expand:
-dust is a more intuitive version
-of du written in Rust. It provides:
-- Visual disk usage representation
-- Colored output
-- Fast parallel scanning
-- Intuitive interface}
+A more intuitive version of du.}
 
 %description %{_description}
 
-
-%files       -n %{crate}
-%license LICENSE
-%license LICENSE.dependencies
-%doc README.md
-%{_bindir}/dust
-
 %prep
-%autosetup -n %{crate}-%{version} -p1
-sed -i 's|use sysinfo::{System, SystemExt};|use sysinfo::System;|' src/main.rs          #sysinfo changed some syntax, patch source code to match these changes
+%autosetup -n du-dust-%{version} -p1
+#sysinfo changed some syntax, patch source code to match these changes
+sed -i 's|use sysinfo::{System, SystemExt};|use sysinfo::System;|' src/main.rs
 sed -i 's|let mut system = System::new();|let system = System::new();|' src/main.rs
 sed -i 's|system.refresh_all();|System::refresh_all(\&system);|' src/main.rs
 sed -i 's|for disk in system.disks()|for disk in System::disks(\&system)|' src/main.rs
@@ -53,11 +70,24 @@ sed -i 's|for disk in system.disks()|for disk in System::disks(\&system)|' src/m
 
 %install
 %cargo_install
-
+install -Dpm 0644 completions/dust.bash -t %{buildroot}%{bash_completions_dir}
+install -Dpm 0644 completions/dust.fish -t %{buildroot}%{fish_completions_dir}
+install -Dpm 0644 completions/_dust -t %{buildroot}%{zsh_completions_dir}
+install -Dpm 0644 man-page/dust.1 -t %{buildroot}%{_mandir}/man1/
 %if %{with check}
 %check
 %cargo_test
 %endif
+
+%files
+%license LICENSE
+%license LICENSE.dependencies
+%doc README.md
+%{_bindir}/dust
+%{_mandir}/man1/dust.1*
+%{bash_completions_dir}/dust.bash
+%{fish_completions_dir}/dust.fish
+%{zsh_completions_dir}/_dust
 
 %changelog
 %autochangelog
